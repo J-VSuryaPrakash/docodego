@@ -1,4 +1,5 @@
 import type { createHomeInput } from "@bill-splitter/shared";
+import { HTTPException } from "hono/http-exception";
 
 export async function createHome(
     db: D1Database,
@@ -17,4 +18,43 @@ export async function createHome(
         id,
         name: data.name,
     };
+}
+
+export async function getBalances(db: D1Database, homeId: string) {
+
+    const home = await db.prepare('SELECT COUNT(*) as count FROM homes WHERE id = ?').bind(homeId).first<{ count: number }>();
+    
+    if (!home || home?.count === 0) {
+        throw new HTTPException(404, { message: 'Home does not exist' })
+    }
+
+    const results = await db.prepare(`
+        SELECT
+            m.id AS member_id,
+            m.name,
+            COALESCE(
+                SUM(
+                    CASE
+                        WHEN s.paid_at IS NULL THEN s.amount_cents
+                        ELSE 0
+                    END
+                ),
+                0
+            ) AS outstanding_cents
+        FROM members m
+        LEFT JOIN shares s ON s.member_id = m.id
+        WHERE m.home_id = ?
+        GROUP BY m.id, m.name
+        ORDER BY m.created_at ASC, m.rowid ASC
+    `).bind(homeId).all();
+
+    const balances = results.results.map((row) => ({
+        memberId: row.member_id,
+        name: row.name,
+        outstandingCents: row.outstanding_cents
+    }));
+
+    return {
+        balances
+    }
 }
