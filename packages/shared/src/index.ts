@@ -8,3 +8,8 @@ export {
   homeParamSchema,
   type createMemberInput,
 } from "./schemas/member.schema";
+
+export {
+  createBillSchema,
+  type createBillInput,
+} from "./schemas/bills.schema";

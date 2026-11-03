@@ -6,9 +6,11 @@ const app = new Hono<AppEnv>()
 import { errorHandler } from './errorHandler'
 import homeRoutes from './routes/home.route'
 import memberRoutes from './routes/member.route'
+import billRoutes from './routes/bills.route'
 
 app.route('api/homes', homeRoutes)
 app.route('api/homes/:homeId/members', memberRoutes)
+app.route('api/homes/:homeId/bills', billRoutes)
 
 app.onError(errorHandler);
 
