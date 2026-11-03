@@ -1,34 +1,29 @@
-import type { createHomeInput } from "@bill-splitter/shared";
-import { HTTPException } from "hono/http-exception";
+import type { createHomeInput } from '@bill-splitter/shared'
+import { HTTPException } from 'hono/http-exception'
 
-export async function createHome(
-    db: D1Database,
-    data: createHomeInput
-) {
-    const id = crypto.randomUUID();
+export async function createHome(db: D1Database, data: createHomeInput) {
+  const id = crypto.randomUUID()
 
-    await db
-        .prepare(
-            "INSERT INTO homes (id, name) VALUES (?, ?)"
-        )
-        .bind(id, data.name)
-        .run();
+  await db.prepare('INSERT INTO homes (id, name) VALUES (?, ?)').bind(id, data.name).run()
 
-    return {
-        id,
-        name: data.name,
-    };
+  return {
+    id,
+    name: data.name,
+  }
 }
 
 export async function getBalances(db: D1Database, homeId: string) {
+  const home = await db
+    .prepare('SELECT COUNT(*) as count FROM homes WHERE id = ?')
+    .bind(homeId)
+    .first<{ count: number }>()
 
-    const home = await db.prepare('SELECT COUNT(*) as count FROM homes WHERE id = ?').bind(homeId).first<{ count: number }>();
-    
-    if (!home || home?.count === 0) {
-        throw new HTTPException(404, { message: 'Home does not exist' })
-    }
+  if (!home || home?.count === 0) {
+    throw new HTTPException(404, { message: 'Home does not exist' })
+  }
 
-    const results = await db.prepare(`
+  const results = await db
+    .prepare(`
         SELECT
             m.id AS member_id,
             m.name,
@@ -46,15 +41,17 @@ export async function getBalances(db: D1Database, homeId: string) {
         WHERE m.home_id = ?
         GROUP BY m.id, m.name
         ORDER BY m.created_at ASC, m.rowid ASC
-    `).bind(homeId).all();
+    `)
+    .bind(homeId)
+    .all()
 
-    const balances = results.results.map((row) => ({
-        memberId: row.member_id,
-        name: row.name,
-        outstandingCents: row.outstanding_cents
-    }));
+  const balances = results.results.map((row) => ({
+    memberId: row.member_id,
+    name: row.name,
+    outstandingCents: row.outstanding_cents,
+  }))
 
-    return {
-        balances
-    }
+  return {
+    balances,
+  }
 }
