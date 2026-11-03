@@ -6,4 +6,8 @@ export const createMemberSchema = z.object({
     })
 });
 
+export const homeParamSchema = z.object({
+  homeId: z.string().trim().min(1, "Home ID is required"),
+});
+
 export type createMemberInput = z.infer<typeof createMemberSchema>;

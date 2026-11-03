@@ -5,5 +5,6 @@ export {
 
 export {
   createMemberSchema,
+  homeParamSchema,
   type createMemberInput,
 } from "./schemas/member.schema";
