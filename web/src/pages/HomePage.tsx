@@ -1,117 +1,164 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { createHomeSchema, type createHomeInput } from '@bill-splitter/shared';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import HomeCard from '../components/HomeCard';
+import { type createHomeInput, createHomeSchema } from '@bill-splitter/shared'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from '@tanstack/react-router'
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { PiPlus } from 'react-icons/pi'
-import { useNavigate } from '@tanstack/react-router';
-import { createHome, getHomes } from '../api/home.api';
+import { toast } from 'sonner'
+import { createHome, getHomes } from '../api/home.api'
+import HomeCard from '../components/HomeCard'
 
-type Home = { id: string; name: string };
+type Home = { id: string; name: string }
 
 function HomePage() {
-    const [homes, setHomes] = useState([] as Home[]);
-    const navigate = useNavigate();
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors, isSubmitting },
-    } = useForm<createHomeInput>({
-        defaultValues: { name: '' },
-        resolver: zodResolver(createHomeSchema),
-    });
+  const [homes, setHomes] = useState([] as Home[])
+  const navigate = useNavigate()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<createHomeInput>({
+    defaultValues: { name: '' },
+    resolver: zodResolver(createHomeSchema),
+  })
 
-    const addHome = async (data: createHomeInput) => {
-        const response = await createHome(data);
-        setHomes((prev) => [...prev, response]);
-        reset();
-    };
+  const addHome = async (data: createHomeInput) => {
+    try {
+      const response = await createHome(data)
+      setHomes((prev) => [...prev, response])
+      reset()
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.error ?? 'Something went wrong', {
+          id: 'create-home-error',
+        })
+      } else {
+        toast.error('Something went wrong', {
+          id: 'create-home-error',
+        })
+      }
+    }
+  }
 
-    useEffect(() => {
-        const fetchHomes = async () => {
-            try {
-                const homes = await getHomes();
-                setHomes(homes);
-            }
-            catch (error) {
-                console.error("Failed to fetch homes:", error);
-            }
+  useEffect(() => {
+    const fetchHomes = async () => {
+      try {
+        const homes = await getHomes()
+        setHomes(homes)
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data?.error ?? 'Something went wrong', {
+            id: 'fetch-homes-error',
+          })
         }
-        fetchHomes();
-    }, [])
+      }
+    }
+    fetchHomes()
+  }, [])
 
-    return (
-        <main className="min-h-screen bg-slate-50 text-slate-900">
-            <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-                <header className="max-w-2xl">
+  return (
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
+        <header className="max-w-2xl">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">
+            Your homes
+          </h1>
+          <p className="mt-3 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
+            Create a home, invite your people, and keep every shared expense easy to follow.
+          </p>
+        </header>
 
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">Your homes</h1>
-                    <p className="mt-3 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
-                        Create a home, invite your people, and keep every shared expense easy to follow.
-                    </p>
-                </header>
-
-                <section aria-labelledby="create-home-title" className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:mt-10 sm:p-7">
-                    <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                        <div className="max-w-md">
-                            <h2 id="create-home-title" className="text-lg font-semibold text-slate-900">Create a new home</h2>
-                            <p className="mt-1.5 text-sm leading-6 text-slate-500">Give your space a name everyone will recognize.</p>
-                        </div>
-
-                        <form onSubmit={handleSubmit(addHome)} className="w-full lg:max-w-2xl" noValidate>
-                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-                                <div className="min-w-0 flex-1">
-                                    <label htmlFor="name" className="sr-only">Name of the home</label>
-                                    <input
-                                        id="name"
-                                        type="text"
-                                        autoComplete="off"
-                                        placeholder="e.g. Maple House"
-                                        {...register('name')}
-                                        className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
-                                    />
-                                    {errors.name && <p className="mt-2 text-sm font-medium text-rose-600">{errors.name.message}</p>}
-                                </div>
-                                <button type="submit" disabled={isSubmitting} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-36">
-                                    <PiPlus className="w-4 h-4" /> Add home
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-
-                <section aria-labelledby="homes-heading" className="mt-10 sm:mt-12">
-                    <div className="mb-5 flex items-end justify-between gap-4">
-                        <div>
-                            <h2 id="homes-heading" className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl">All homes</h2>
-                            <p className="mt-1 text-sm text-slate-500">Choose a home to manage its members or bills.</p>
-                        </div>
-                        <span className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 shadow-sm">
-                            {homes.length} {homes.length === 1 ? 'home' : 'homes'}
-                        </span>
-                    </div>
-
-                    {homes.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-                            {homes.map((home) => (
-                                <HomeCard key={home.id} home={home} onMembersClick={() => {
-                                    navigate({ to: `/homes/${home.id}/members`, params: { homeId: home.id } })
-                                }} onBillsClick={() => { 
-                                    navigate({ to: `/homes/${home.id}/bills`, params: { homeId: home.id } })    
-                                }} />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
-                            <h3 className="font-semibold text-slate-900">No homes yet</h3>
-                            <p className="mt-2 text-sm text-slate-500">Add your first home using the form above.</p>
-                        </div>
-                    )}
-                </section>
+        <section
+          aria-labelledby="create-home-title"
+          className="mt-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:mt-10 sm:p-7"
+        >
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-md">
+              <h2 id="create-home-title" className="text-lg font-semibold text-slate-900">
+                Create a new home
+              </h2>
+              <p className="mt-1.5 text-sm leading-6 text-slate-500">
+                Give your space a name everyone will recognize.
+              </p>
             </div>
-        </main>
-    );
+
+            <form onSubmit={handleSubmit(addHome)} className="w-full lg:max-w-2xl" noValidate>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                <div className="min-w-0 flex-1">
+                  <label htmlFor="name" className="sr-only">
+                    Name of the home
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    autoComplete="off"
+                    placeholder="e.g. Maple House"
+                    {...register('name')}
+                    className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+                  />
+                  {errors.name && (
+                    <p className="mt-2 text-sm font-medium text-rose-600">{errors.name.message}</p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-36"
+                >
+                  <PiPlus className="w-4 h-4" /> Add home
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section aria-labelledby="homes-heading" className="mt-10 sm:mt-12">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <h2
+                id="homes-heading"
+                className="text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl"
+              >
+                All homes
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Choose a home to manage its members or bills.
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600 shadow-sm">
+              {homes.length} {homes.length === 1 ? 'home' : 'homes'}
+            </span>
+          </div>
+
+          {homes.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+              {homes.map((home) => (
+                <HomeCard
+                  key={home.id}
+                  home={home}
+                  onMembersClick={() => {
+                    navigate({ to: `/homes/${home.id}/members`, params: { homeId: home.id } })
+                  }}
+                  onBillsClick={() => {
+                    navigate({ to: `/homes/${home.id}/bills`, params: { homeId: home.id } })
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+              <h3 className="font-semibold text-slate-900">No homes yet</h3>
+              <p className="mt-2 text-sm text-slate-500">
+                Add your first home using the form above.
+              </p>
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
+  )
 }
 
-export default HomePage;
+export default HomePage

@@ -58,8 +58,8 @@ export async function payShare(
 }
 
 export async function getShares(db: D1Database, homeId: string, billId: string) {
-
-  const { results } = await db.prepare(`
+  const { results } = await db
+    .prepare(`
     SELECT
       s.id,
       m.name AS memberName,
@@ -72,13 +72,11 @@ export async function getShares(db: D1Database, homeId: string, billId: string) 
     ORDER BY m.created_at ASC, m.rowid ASC
   `)
     .bind(homeId, billId)
-    .all();
+    .all()
 
   if (!results || results.length === 0) {
     throw new HTTPException(404, { message: 'No shares found for this bill' })
   }
 
-  return { results };
-
+  return { results }
 }
-

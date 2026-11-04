@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { billParamSchema } from './schemas/bills.schema'
-import { shareParamSchema } from './schemas/share.schema'
 import { homeParamSchema } from './schemas/member.schema'
+import { shareParamSchema } from './schemas/share.schema'
 
 const payShareParamsSchema = z.object({
   ...billParamSchema.shape,
@@ -10,7 +10,7 @@ const payShareParamsSchema = z.object({
 
 const getSharesParamSchema = z.object({
   ...homeParamSchema.shape,
-  ...billParamSchema.shape
+  ...billParamSchema.shape,
 })
 
 export {
@@ -29,4 +29,4 @@ export {
   homeParamSchema,
 } from './schemas/member.schema'
 
-export { payShareParamsSchema, getSharesParamSchema }
+export { getSharesParamSchema, payShareParamsSchema }

@@ -92,7 +92,6 @@ export async function createBill(db: D1Database, data: BillData) {
 }
 
 export async function getBillsByHomeId(db: D1Database, homeId: string) {
-
   const { results } = await db
     .prepare('SELECT * FROM bills WHERE home_id = ? ORDER BY created_at DESC, rowid DESC')
     .bind(homeId)
@@ -106,7 +105,7 @@ export async function getBillsByHomeId(db: D1Database, homeId: string) {
     return {
       id: bill.id,
       title: bill.title,
-      totalCents: bill.total_cents
+      totalCents: bill.total_cents,
     }
   })
 

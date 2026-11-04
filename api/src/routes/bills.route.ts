@@ -24,7 +24,8 @@ billRoutes.post(
   },
 )
 
-billRoutes.get("/", 
+billRoutes.get(
+  '/',
   zValidator('param', homeParamSchema, (result, c) => {
     if (!result.success) {
       return c.json({ error: 'Home id required' }, 400)
@@ -36,8 +37,7 @@ billRoutes.get("/",
     const bills = await getBillsByHomeId(c.env.DB, homeId)
 
     return c.json(bills, 200)
-
-  }
+  },
 )
 
 export default billRoutes

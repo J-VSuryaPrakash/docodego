@@ -38,14 +38,10 @@ homeRoutes.get(
   },
 )
 
-homeRoutes.get("/",
-  async (c) => {
+homeRoutes.get('/', async (c) => {
+  const homes = await getHomes(c.env.DB)
 
-    const homes = await getHomes(c.env.DB);
-
-    return c.json(homes, 200);
-
-  }
-)
+  return c.json(homes, 200)
+})
 
 export default homeRoutes

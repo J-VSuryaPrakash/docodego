@@ -4,5 +4,3 @@ import BillPage from '../pages/BillPage'
 export const Route = createFileRoute('/homes/$homeId/bills')({
   component: BillPage,
 })
-
-

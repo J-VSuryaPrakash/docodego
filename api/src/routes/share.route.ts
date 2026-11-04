@@ -28,19 +28,20 @@ shareRoutes.post(
   },
 )
 
-shareRoutes.get("/",
+shareRoutes.get(
+  '/',
   zValidator('param', getSharesParamSchema, (result, c) => {
     if (!result.success) {
       return c.json({ error: 'Invalid bill or share ID' }, 400)
     }
   }),
   async (c) => {
+    const { homeId, billId } = c.req.valid('param')
 
-    const { homeId, billId } = c.req.valid('param');
+    const shares = await getShares(c.env.DB, homeId, billId)
 
-    const shares = await getShares(c.env.DB, homeId, billId);
-
-    return c.json(shares, 200);
-  })
+    return c.json(shares, 200)
+  },
+)
 
 export default shareRoutes

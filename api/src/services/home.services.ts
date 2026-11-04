@@ -22,7 +22,7 @@ export async function getBalances(db: D1Database, homeId: string) {
     throw new HTTPException(404, { message: 'Home does not exist' })
   }
 
-  const results = await db
+  const { results } = await db
     .prepare(`
         SELECT
             m.id AS member_id,
@@ -45,7 +45,11 @@ export async function getBalances(db: D1Database, homeId: string) {
     .bind(homeId)
     .all()
 
-  const balances = results.results.map((row) => ({
+  if (!results || results.length === 0) {
+    throw new HTTPException(404, { message: 'No Members for this home' })
+  }
+
+  const balances = results.map((row) => ({
     memberId: row.member_id,
     name: row.name,
     outstandingCents: row.outstanding_cents,
