@@ -69,7 +69,7 @@ function HomePage() {
                                         autoComplete="off"
                                         placeholder="e.g. Maple House"
                                         {...register('name')}
-                                        className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 aria-[invalid=true]:border-rose-400 aria-[invalid=true]:focus:ring-rose-100"
+                                        className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
                                     />
                                     {errors.name && <p className="mt-2 text-sm font-medium text-rose-600">{errors.name.message}</p>}
                                 </div>
