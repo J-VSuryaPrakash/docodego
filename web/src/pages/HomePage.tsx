@@ -97,7 +97,9 @@ function HomePage() {
                             {homes.map((home) => (
                                 <HomeCard key={home.id} home={home} onMembersClick={() => {
                                     navigate({ to: `/homes/${home.id}/members`, params: { homeId: home.id } })
-                                }} onBillsClick={() => { }} />
+                                }} onBillsClick={() => { 
+                                    navigate({ to: `/homes/${home.id}/bills`, params: { homeId: home.id } })    
+                                }} />
                             ))}
                         </div>
                     ) : (

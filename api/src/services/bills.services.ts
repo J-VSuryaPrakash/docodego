@@ -90,3 +90,25 @@ export async function createBill(db: D1Database, data: BillData) {
     shares: insertedShares,
   }
 }
+
+export async function getBillsByHomeId(db: D1Database, homeId: string) {
+
+  const { results } = await db
+    .prepare('SELECT * FROM bills WHERE home_id = ? ORDER BY created_at DESC, rowid DESC')
+    .bind(homeId)
+    .all()
+
+  if (!results || results.length === 0) {
+    throw new HTTPException(404, { message: 'No bills found for this home' })
+  }
+
+  const bills = results.map((bill) => {
+    return {
+      id: bill.id,
+      title: bill.title,
+      totalCents: bill.total_cents
+    }
+  })
+
+  return { results: bills }
+}

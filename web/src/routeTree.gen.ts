@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HomesHomeIdBillsRouteImport } from './routes/homes.$homeId.bills'
 import { Route as HomesHomeIdMembersRouteImport } from './routes/homes.$homeId.members'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomesHomeIdBillsRoute = HomesHomeIdBillsRouteImport.update({
+  id: '/homes/$homeId/bills',
+  path: '/homes/$homeId/bills',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomesHomeIdMembersRoute = HomesHomeIdMembersRouteImport.update({
@@ -25,27 +31,31 @@ const HomesHomeIdMembersRoute = HomesHomeIdMembersRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/homes/$homeId/bills': typeof HomesHomeIdBillsRoute
   '/homes/$homeId/members': typeof HomesHomeIdMembersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/homes/$homeId/bills': typeof HomesHomeIdBillsRoute
   '/homes/$homeId/members': typeof HomesHomeIdMembersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/homes/$homeId/bills': typeof HomesHomeIdBillsRoute
   '/homes/$homeId/members': typeof HomesHomeIdMembersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/homes/$homeId/members'
+  fullPaths: '/' | '/homes/$homeId/bills' | '/homes/$homeId/members'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/homes/$homeId/members'
-  id: '__root__' | '/' | '/homes/$homeId/members'
+  to: '/' | '/homes/$homeId/bills' | '/homes/$homeId/members'
+  id: '__root__' | '/' | '/homes/$homeId/bills' | '/homes/$homeId/members'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HomesHomeIdBillsRoute: typeof HomesHomeIdBillsRoute
   HomesHomeIdMembersRoute: typeof HomesHomeIdMembersRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/homes/$homeId/bills': {
+      id: '/homes/$homeId/bills'
+      path: '/homes/$homeId/bills'
+      fullPath: '/homes/$homeId/bills'
+      preLoaderRoute: typeof HomesHomeIdBillsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/homes/$homeId/members': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HomesHomeIdBillsRoute: HomesHomeIdBillsRoute,
   HomesHomeIdMembersRoute: HomesHomeIdMembersRoute,
 }
 export const routeTree = rootRouteImport
