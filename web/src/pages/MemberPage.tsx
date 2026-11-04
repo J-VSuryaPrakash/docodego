@@ -1,18 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createMemberSchema, type createMemberInput } from '@bill-splitter/shared';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import MemberCard, { type Member } from '../components/MemberCard';
 import { PiPlus } from 'react-icons/pi'
-
-const initialMembers: Member[] = [
-    { memberId: '51c13b7a-9b87-4208-9947-a5287c61b2e2', name: 'Sulochana', outstandingCents: 900 },
-    { memberId: '1631cc54-bab0-442f-9eb5-1427af9c798f', name: 'Ravi', outstandingCents: 900 },
-    { memberId: 'ccde4396-5081-4d35-9316-809275672523', name: 'Kilari', outstandingCents: 0 },
-];
+import { useParams } from '@tanstack/react-router';
+import { createMember, getMembers } from '../api/members.api'
 
 function MemberPage() {
-    const [members, setMembers] = useState(initialMembers);
+    const [members, setMembers] = useState([] as Member[]);
+
     const {
         register,
         handleSubmit,
@@ -23,13 +20,32 @@ function MemberPage() {
         resolver: zodResolver(createMemberSchema),
     });
 
-    const createMember = (data: createMemberInput) => {
-        setMembers((currentMembers) => [
-            ...currentMembers,
-            { memberId: crypto.randomUUID(), name: data.name.trim(), outstandingCents: 0 },
-        ]);
+    const addMember = async (data: createMemberInput) => {
+        const response = await createMember(homeId, data);
+        console.log(response);
+        const newMember = {
+            memberId: response.id,
+            name: response.name,
+            outstandingCents: 0,
+        }
+        setMembers((currentMembers) => [...currentMembers, newMember]);
         reset();
     };
+    const { homeId } = useParams({
+        from: "/homes/$homeId/members",
+    });
+
+    useEffect(() => {
+        const fetchMembers = async () => {
+            try {
+                const data = await getMembers(homeId);
+                setMembers(data.balances);
+            } catch (error) {
+                console.error("Failed to fetch members:", error);
+            }
+        };
+        fetchMembers();
+    }, [homeId]);
 
     return (
         <main className="min-h-screen bg-slate-50 text-slate-900">
@@ -57,7 +73,7 @@ function MemberPage() {
                             <p className="mt-1.5 text-sm leading-6 text-slate-500">Add someone before including them in shared bills.</p>
                         </div>
 
-                        <form onSubmit={handleSubmit(createMember)} className="w-full lg:max-w-xl" noValidate>
+                        <form onSubmit={handleSubmit(addMember)} className="w-full lg:max-w-xl" noValidate>
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                                 <div className="min-w-0 flex-1">
                                     <label htmlFor="member-name" className="sr-only">Member name</label>
