@@ -1,7 +1,7 @@
 import { createHomeSchema, homeParamSchema } from '@bill-splitter/shared'
 import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
-import { createHome, getBalances } from '../services/home.services'
+import { createHome, getBalances, getHomes } from '../services/home.services'
 import type { AppEnv } from '../types/env'
 
 const homeRoutes = new Hono<AppEnv>()
@@ -36,6 +36,16 @@ homeRoutes.get(
 
     return c.json(balances, 200)
   },
+)
+
+homeRoutes.get("/",
+  async (c) => {
+
+    const homes = await getHomes(c.env.DB);
+
+    return c.json(homes, 200);
+
+  }
 )
 
 export default homeRoutes

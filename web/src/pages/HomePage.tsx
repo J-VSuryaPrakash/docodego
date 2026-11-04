@@ -1,24 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createHomeSchema, type createHomeInput } from '@bill-splitter/shared';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import HomeCard from '../components/HomeCard';
 import { PiPlus } from 'react-icons/pi'
+import { useNavigate } from '@tanstack/react-router';
+import { createHome, getHomes } from '../api/home.api';
 
-type Home = { id: number; name: string };
-
-const initialHomes: Home[] = [
-    { id: 1, name: 'Flat 201' },
-    { id: 2, name: 'Flat 202' },
-    { id: 3, name: 'Flat 203' },
-    { id: 4, name: 'Flat 204' },
-    { id: 5, name: 'Flat 205' },
-    { id: 6, name: 'Flat 206' },
-];
-
+type Home = { id: string; name: string };
 
 function HomePage() {
-    const [homes, setHomes] = useState(initialHomes);
+    const [homes, setHomes] = useState([] as Home[]);
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -29,19 +22,30 @@ function HomePage() {
         resolver: zodResolver(createHomeSchema),
     });
 
-    const createHome = (data: createHomeInput) => {
-        setHomes((currentHomes) => [
-            ...currentHomes,
-            { id: Math.max(0, ...currentHomes.map((home) => home.id)) + 1, name: data.name.trim() },
-        ]);
+    const addHome = async (data: createHomeInput) => {
+        const response = await createHome(data);
+        setHomes((prev) => [...prev, response]);
         reset();
     };
+
+    useEffect(() => {
+        const fetchHomes = async () => {
+            try {
+                const homes = await getHomes();
+                setHomes(homes);
+            }
+            catch (error) {
+                console.error("Failed to fetch homes:", error);
+            }
+        }
+        fetchHomes();
+    }, [])
 
     return (
         <main className="min-h-screen bg-slate-50 text-slate-900">
             <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
                 <header className="max-w-2xl">
-                   
+
                     <h1 className="text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl">Your homes</h1>
                     <p className="mt-3 max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
                         Create a home, invite your people, and keep every shared expense easy to follow.
@@ -55,7 +59,7 @@ function HomePage() {
                             <p className="mt-1.5 text-sm leading-6 text-slate-500">Give your space a name everyone will recognize.</p>
                         </div>
 
-                        <form onSubmit={handleSubmit(createHome)} className="w-full lg:max-w-2xl" noValidate>
+                        <form onSubmit={handleSubmit(addHome)} className="w-full lg:max-w-2xl" noValidate>
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
                                 <div className="min-w-0 flex-1">
                                     <label htmlFor="name" className="sr-only">Name of the home</label>
@@ -70,7 +74,7 @@ function HomePage() {
                                     {errors.name && <p className="mt-2 text-sm font-medium text-rose-600">{errors.name.message}</p>}
                                 </div>
                                 <button type="submit" disabled={isSubmitting} className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-36">
-                                    <PiPlus  className="w-4 h-4" /> Add home
+                                    <PiPlus className="w-4 h-4" /> Add home
                                 </button>
                             </div>
                         </form>
@@ -91,7 +95,9 @@ function HomePage() {
                     {homes.length > 0 ? (
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
                             {homes.map((home) => (
-                                <HomeCard key={home.id} home={home} onMembersClick={() => { }} onBillsClick={() => { }} />
+                                <HomeCard key={home.id} home={home} onMembersClick={() => {
+                                    navigate({ to: `/homes/${home.id}/members`, params: { homeId: home.id } })
+                                }} onBillsClick={() => { }} />
                             ))}
                         </div>
                     ) : (

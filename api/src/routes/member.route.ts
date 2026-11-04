@@ -8,7 +8,11 @@ const memberRoutes = new Hono<AppEnv>()
 
 memberRoutes.post(
   '/',
-  zValidator('param', homeParamSchema),
+  zValidator('param', homeParamSchema, (result, c) => {
+    if (!result.success) {
+      return c.json({ error: 'Home id required' }, 400)
+    }
+  }),
   zValidator('json', createMemberSchema),
   async (c) => {
     const { homeId } = c.req.valid('param')

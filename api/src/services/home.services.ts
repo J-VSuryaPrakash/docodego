@@ -55,3 +55,18 @@ export async function getBalances(db: D1Database, homeId: string) {
     balances,
   }
 }
+
+export async function getHomes(db: D1Database) {
+  const results = await db
+    .prepare(`
+        SELECT id, name FROM homes
+        ORDER BY created_at ASC, rowid ASC
+    `)
+    .all()
+
+  if (!results.results) {
+    throw new HTTPException(404, { message: 'No homes found' })
+  }
+
+  return { results: results.results }
+}

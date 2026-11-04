@@ -1,9 +1,9 @@
 import { HiHome } from 'react-icons/hi'
 
 type HomeCardProps = {
-    home: { id: number; name: string };
-    onMembersClick: (homeId: number) => void;
-    onBillsClick: (homeId: number) => void;
+    home: { id: string; name: string };
+    onMembersClick: (homeId: string) => void;
+    onBillsClick: (homeId: string) => void;
 };
 
 
