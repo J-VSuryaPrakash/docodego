@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HomesHomeIdBillsRouteImport } from './routes/homes.$homeId.bills'
 import { Route as HomesHomeIdMembersRouteImport } from './routes/homes.$homeId.members'
+import { Route as HomesHomeIdBillsBillIdSharesRouteImport } from './routes/homes.$homeId.bills_.$billId.shares'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,58 @@ const HomesHomeIdMembersRoute = HomesHomeIdMembersRouteImport.update({
   path: '/homes/$homeId/members',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HomesHomeIdBillsBillIdSharesRoute =
+  HomesHomeIdBillsBillIdSharesRouteImport.update({
+    id: '/homes/$homeId/bills_/$billId/shares',
+    path: '/homes/$homeId/bills/$billId/shares',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/homes/$homeId/bills': typeof HomesHomeIdBillsRoute
   '/homes/$homeId/members': typeof HomesHomeIdMembersRoute
+  '/homes/$homeId/bills/$billId/shares': typeof HomesHomeIdBillsBillIdSharesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/homes/$homeId/bills': typeof HomesHomeIdBillsRoute
   '/homes/$homeId/members': typeof HomesHomeIdMembersRoute
+  '/homes/$homeId/bills/$billId/shares': typeof HomesHomeIdBillsBillIdSharesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/homes/$homeId/bills': typeof HomesHomeIdBillsRoute
   '/homes/$homeId/members': typeof HomesHomeIdMembersRoute
+  '/homes/$homeId/bills_/$billId/shares': typeof HomesHomeIdBillsBillIdSharesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/homes/$homeId/bills' | '/homes/$homeId/members'
+  fullPaths:
+    | '/'
+    | '/homes/$homeId/bills'
+    | '/homes/$homeId/members'
+    | '/homes/$homeId/bills/$billId/shares'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/homes/$homeId/bills' | '/homes/$homeId/members'
-  id: '__root__' | '/' | '/homes/$homeId/bills' | '/homes/$homeId/members'
+  to:
+    | '/'
+    | '/homes/$homeId/bills'
+    | '/homes/$homeId/members'
+    | '/homes/$homeId/bills/$billId/shares'
+  id:
+    | '__root__'
+    | '/'
+    | '/homes/$homeId/bills'
+    | '/homes/$homeId/members'
+    | '/homes/$homeId/bills_/$billId/shares'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomesHomeIdBillsRoute: typeof HomesHomeIdBillsRoute
   HomesHomeIdMembersRoute: typeof HomesHomeIdMembersRoute
+  HomesHomeIdBillsBillIdSharesRoute: typeof HomesHomeIdBillsBillIdSharesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomesHomeIdMembersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/homes/$homeId/bills_/$billId/shares': {
+      id: '/homes/$homeId/bills_/$billId/shares'
+      path: '/homes/$homeId/bills/$billId/shares'
+      fullPath: '/homes/$homeId/bills/$billId/shares'
+      preLoaderRoute: typeof HomesHomeIdBillsBillIdSharesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +120,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomesHomeIdBillsRoute: HomesHomeIdBillsRoute,
   HomesHomeIdMembersRoute: HomesHomeIdMembersRoute,
+  HomesHomeIdBillsBillIdSharesRoute: HomesHomeIdBillsBillIdSharesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

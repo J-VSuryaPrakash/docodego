@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { PiCurrencyDollar, PiPlus, PiReceipt } from 'react-icons/pi';
 import BillCard, { type Bill } from '../components/BillCard';
-import { useParams } from '@tanstack/react-router';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import { getBills, createBill } from '../api/bills.api';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -18,6 +18,9 @@ function BillPage() {
     const { homeId } = useParams({
         from: "/homes/$homeId/bills"
     })
+    
+    const navigate = useNavigate()
+
     const {
         register,
         handleSubmit,
@@ -88,7 +91,7 @@ function BillPage() {
                                     autoComplete="off"
                                     placeholder="e.g. Electricity bill"
                                     {...register('title')}
-                                    className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 aria-[invalid=true]:border-rose-400 aria-[invalid=true]:focus:ring-rose-100"
+                                    className="min-h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
                                 />
                                 {errors.title && <p className="mt-2 text-sm font-medium text-rose-600">{errors.title.message}</p>}
                             </div>
@@ -134,7 +137,13 @@ function BillPage() {
 
                     {bills.length > 0 ? (
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-                            {bills.map((bill) => <BillCard key={bill.id} bill={bill} onOpen={() => { }} />)}
+                            {bills.map((bill) => <BillCard key={bill.id} bill={bill} onOpen={(billId) => {
+                                console.log("Navigating to bill:", billId);
+                                navigate({
+                                    to: '/homes/$homeId/bills/$billId/shares',
+                                    params: { homeId, billId },
+                                });
+                            }} />)}
                         </div>
                     ) : (
                         <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">

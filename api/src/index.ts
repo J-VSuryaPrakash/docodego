@@ -35,7 +35,8 @@ app.use('/api/*', cors({
 app.route('api/homes', homeRoutes)
 app.route('api/homes/:homeId/members', memberRoutes)
 app.route('api/homes/:homeId/bills', billRoutes)
-app.route('api/bills/:billId/shares/:shareId/pay', shareRoutes)
+app.route('api/bills/:billId/shares/:shareId', shareRoutes)
+app.route('api/homes/:homeId/bills/:billId/shares', shareRoutes)
 
 app.onError(errorHandler)
 
