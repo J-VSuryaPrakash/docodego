@@ -79,7 +79,8 @@ function PaymentModal({ isOpen, share, onClose, onConfirm }: PaymentModalProps) 
         type="button"
         aria-label="Close payment dialog"
         onClick={handleBackdropClick}
-        className="absolute inset-0 bg-slate-950/45"
+        disabled={isProcessing}
+        className="absolute inset-0 cursor-pointer bg-slate-950/45 disabled:cursor-default"
       />
       <section
         role="dialog"
@@ -111,7 +112,7 @@ function PaymentModal({ isOpen, share, onClose, onConfirm }: PaymentModalProps) 
               type="button"
               onClick={onClose}
               aria-label="Close payment dialog"
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
             >
               <PiX className="size-5" aria-hidden="true" />
             </button>
@@ -168,7 +169,7 @@ function PaymentModal({ isOpen, share, onClose, onConfirm }: PaymentModalProps) 
               type="button"
               onClick={handleConfirm}
               disabled={isProcessing}
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed"
             >
               <PiCreditCard className="size-5" aria-hidden="true" />
               Confirm {amount}
@@ -176,7 +177,7 @@ function PaymentModal({ isOpen, share, onClose, onConfirm }: PaymentModalProps) 
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl px-5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-xl px-5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
             >
               Cancel
             </button>
@@ -197,7 +198,7 @@ function PaymentModal({ isOpen, share, onClose, onConfirm }: PaymentModalProps) 
           <button
             type="button"
             onClick={onClose}
-            className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
+            className="mt-6 inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-700 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2"
           >
             <PiCheckCircle className="size-5" aria-hidden="true" />
             Done
@@ -209,14 +210,14 @@ function PaymentModal({ isOpen, share, onClose, onConfirm }: PaymentModalProps) 
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="inline-flex min-h-12 cursor-pointer items-center justify-center rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleConfirm}
-              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-indigo-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="inline-flex min-h-12 cursor-pointer items-center justify-center rounded-xl bg-indigo-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
             >
               Try again
             </button>
