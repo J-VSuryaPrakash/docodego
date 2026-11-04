@@ -1,10 +1,16 @@
 import { z } from 'zod'
 import { billParamSchema } from './schemas/bills.schema'
 import { shareParamSchema } from './schemas/share.schema'
+import { homeParamSchema } from './schemas/member.schema'
 
-const paramsSchema = z.object({
+const payShareParamsSchema = z.object({
   ...billParamSchema.shape,
   ...shareParamSchema.shape,
+})
+
+const getSharesParamSchema = z.object({
+  ...homeParamSchema.shape,
+  ...billParamSchema.shape
 })
 
 export {
@@ -22,4 +28,5 @@ export {
   createMemberSchema,
   homeParamSchema,
 } from './schemas/member.schema'
-export { paramsSchema }
+
+export { payShareParamsSchema, getSharesParamSchema }
